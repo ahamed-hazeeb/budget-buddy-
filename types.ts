@@ -37,12 +37,13 @@ export interface Reminder {
   dueDate: string;
   amount: number;
   isPaid: boolean;
+  sendEmail: boolean;
 }
 
 export interface Account {
   id: string;
   name: string;
-  type: 'Cash' | 'Bank' | 'Card';
+  type: 'Cash' | 'Bank' | 'Card' | 'Other';
   balance: number;
 }
 
@@ -50,4 +51,15 @@ export interface MonthlySummary {
   income: number;
   expenses: number;
   balance: number;
+}
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+export interface AuthResponse {
+  user: User;
+  token: string;
 }
