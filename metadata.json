@@ -1,0 +1,7 @@
+{
+  "name": "Personal Finance Management System WebSite",
+  "description": "A comprehensive web interface for the PFMS project, featuring AI-driven insights, expense tracking, and budgeting tools.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
