@@ -46,13 +46,13 @@ const Dashboard: React.FC = () => {
   // Note: Backend returns lowercase types ("income", "expense", "savings")
   const totalIncome = transactions
     .filter(t => t.type?.toString().toLowerCase() === 'income')
-    .reduce((sum, t) => sum + t.amount, 0);
+    .reduce((sum, t) => sum + Number(t.amount), 0);
     
   const totalExpenses = transactions
     .filter(t => t.type?.toString().toLowerCase() === 'expense')
-    .reduce((sum, t) => sum + t.amount, 0);
+    .reduce((sum, t) => sum + Number(t.amount), 0);
     
-  const totalBalance = accounts.reduce((sum, acc) => sum + acc.balance, 0);
+  const totalBalance = accounts.reduce((sum, acc) => sum + Number(acc.balance), 0);
 
   if (isLoading) {
     return (
@@ -96,7 +96,8 @@ const Dashboard: React.FC = () => {
       
       console.log(`💸 Expense: ${t.amount} → ${categoryName} (category_id: ${t.category_id})`);
       
-      acc[categoryName] = (acc[categoryName] || 0) + t.amount;
+      // Ensure amount is treated as a number to avoid string concatenation
+      acc[categoryName] = (acc[categoryName] || 0) + Number(t.amount);
       return acc;
     }, {} as Record<string, number>);
 
