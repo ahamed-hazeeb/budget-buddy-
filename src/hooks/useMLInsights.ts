@@ -29,6 +29,10 @@ export const useMLInsights = () => {
     queryKey: [QUERY_KEYS.ML_INSIGHTS],
     queryFn: mlService.getUserInsights,
     staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: false, // Don't retry on 400/404
+    meta: {
+      errorMessage: 'Failed to load ML insights',
+    },
   });
 };
 

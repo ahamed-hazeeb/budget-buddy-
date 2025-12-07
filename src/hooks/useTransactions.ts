@@ -7,6 +7,10 @@ export const useTransactions = () => {
   return useQuery({
     queryKey: [QUERY_KEYS.TRANSACTIONS],
     queryFn: transactionService.getAll,
+    retry: false, // Don't retry on 404
+    meta: {
+      errorMessage: 'Failed to load transactions',
+    },
   });
 };
 

@@ -46,17 +46,29 @@ apiClient.interceptors.response.use(
         return Promise.reject(error);
       }
 
+      // Handle 404 - Not Found (suppress toast for backend endpoints that might not be implemented yet)
+      if (status === 404) {
+        console.warn(`API endpoint not found: ${error.config?.url}`);
+        // Don't show toast for 404s - let the component handle it
+        return Promise.reject(error);
+      }
+
+      // Handle 400 - Bad Request (often from ML endpoints that need data first)
+      if (status === 400) {
+        console.warn(`Bad request to: ${error.config?.url}`, (data as any)?.message);
+        // Don't show toast for 400s - let the component handle it
+        return Promise.reject(error);
+      }
+
       // Handle other errors
       const message = (data as any)?.message || AUTH_MESSAGES.UNEXPECTED_ERROR;
-      
-      // Don't show toast for certain cases where we handle errors locally
-      if (status !== 404) {
-        toast.error(message);
-      }
+      toast.error(message);
     } else if (error.request) {
       // Network error
+      console.error('Network error:', error.message);
       toast.error(AUTH_MESSAGES.NETWORK_ERROR);
     } else {
+      console.error('Request error:', error.message);
       toast.error(AUTH_MESSAGES.UNEXPECTED_ERROR);
     }
 

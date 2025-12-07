@@ -7,6 +7,10 @@ export const useBudgets = () => {
   return useQuery({
     queryKey: [QUERY_KEYS.BUDGETS],
     queryFn: budgetService.getAll,
+    retry: false, // Don't retry on 404
+    meta: {
+      errorMessage: 'Failed to load budgets',
+    },
   });
 };
 
