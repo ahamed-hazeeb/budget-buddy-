@@ -43,12 +43,13 @@ const Dashboard: React.FC = () => {
   const isLoading = txnLoading || budgetsLoading || categoriesLoading;
 
   // Calculate summary from transactions
+  // Note: Backend returns lowercase types ("income", "expense", "savings")
   const totalIncome = transactions
-    .filter(t => t.type === TransactionType.INCOME)
+    .filter(t => t.type?.toString().toLowerCase() === 'income')
     .reduce((sum, t) => sum + t.amount, 0);
     
   const totalExpenses = transactions
-    .filter(t => t.type === TransactionType.EXPENSE)
+    .filter(t => t.type?.toString().toLowerCase() === 'expense')
     .reduce((sum, t) => sum + t.amount, 0);
     
   const totalBalance = accounts.reduce((sum, acc) => sum + acc.balance, 0);
@@ -84,8 +85,9 @@ const Dashboard: React.FC = () => {
   console.log('🗂️ Category Map:', categoryMap);
 
   // Expense breakdown by category - FIX: Use category_id with lookup
+  // Note: Backend returns lowercase types ("income", "expense", "savings")
   const expensesByCategory = transactions
-    .filter(t => t.type === TransactionType.EXPENSE)
+    .filter(t => t.type?.toString().toLowerCase() === 'expense')
     .reduce((acc, t) => {
       // Get category name from category_id using lookup map
       const categoryName = t.category_id 
