@@ -24,10 +24,28 @@ const budgetService = {
     const userId = getUserId();
     const response = await apiClient.get(`/budgets/overall/${userId}`);
     // Backend returns a single budget object, wrap it in an array
-    const data = response.data;
+    let data = response.data;
+    
+    // Handle empty or null responses
     if (!data) return [];
-    // If it's already an array, return it; otherwise wrap single object in array
-    return Array.isArray(data) ? data : [data];
+    
+    // Normalize the data structure - ensure we have the right properties
+    const normalizeBudget = (budget: any): Budget => ({
+      id: budget.id || budget._id || String(Math.random()),
+      category: budget.category || 'General',
+      limit: budget.limit || budget.amount || 0,
+      spent: budget.spent || budget.current || 0,
+      startDate: budget.startDate || budget.start_date || new Date().toISOString().split('T')[0],
+      endDate: budget.endDate || budget.end_date || new Date().toISOString().split('T')[0],
+      userId: budget.userId || budget.user_id,
+    });
+    
+    // If it's already an array, normalize each item; otherwise normalize single object and wrap in array
+    if (Array.isArray(data)) {
+      return data.map(normalizeBudget);
+    }
+    
+    return [normalizeBudget(data)];
   },
 
   // Get budget by ID
@@ -73,11 +91,30 @@ const budgetService = {
     const response = await apiClient.get(`/budgets/overall/${userId}`, {
       params: { startDate, endDate }
     });
+    
     // Backend returns a single budget object, wrap it in an array
-    const data = response.data;
+    let data = response.data;
+    
+    // Handle empty or null responses
     if (!data) return [];
-    // If it's already an array, return it; otherwise wrap single object in array
-    return Array.isArray(data) ? data : [data];
+    
+    // Normalize the data structure - ensure we have the right properties
+    const normalizeBudget = (budget: any): Budget => ({
+      id: budget.id || budget._id || String(Math.random()),
+      category: budget.category || 'General',
+      limit: budget.limit || budget.amount || 0,
+      spent: budget.spent || budget.current || 0,
+      startDate: budget.startDate || budget.start_date || startDate,
+      endDate: budget.endDate || budget.end_date || endDate,
+      userId: budget.userId || budget.user_id,
+    });
+    
+    // If it's already an array, normalize each item; otherwise normalize single object and wrap in array
+    if (Array.isArray(data)) {
+      return data.map(normalizeBudget);
+    }
+    
+    return [normalizeBudget(data)];
   },
 };
 

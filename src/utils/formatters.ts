@@ -3,7 +3,10 @@ import { format, parseISO, isValid } from 'date-fns';
 /**
  * Format a number as currency
  */
-export const formatCurrency = (amount: number, currency: string = 'Rs.'): string => {
+export const formatCurrency = (amount: number | undefined | null, currency: string = 'Rs.'): string => {
+  if (amount === undefined || amount === null || isNaN(amount)) {
+    return `${currency} 0`;
+  }
   return `${currency} ${amount.toLocaleString('en-IN', {
     minimumFractionDigits: 0,
     maximumFractionDigits: 2,
