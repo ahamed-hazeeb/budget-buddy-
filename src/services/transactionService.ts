@@ -1,0 +1,64 @@
+import apiClient from '../api/client';
+import { Transaction } from '../types';
+
+export interface CreateTransactionData {
+  date: string;
+  amount: number;
+  category: string;
+  account: string;
+  type: 'INCOME' | 'EXPENSE';
+  note?: string;
+}
+
+export interface UpdateTransactionData extends Partial<CreateTransactionData> {
+  id: string;
+}
+
+const transactionService = {
+  // Get all transactions
+  getAll: async (): Promise<Transaction[]> => {
+    const response = await apiClient.get<Transaction[]>('/transactions');
+    return response.data;
+  },
+
+  // Get transaction by ID
+  getById: async (id: string): Promise<Transaction> => {
+    const response = await apiClient.get<Transaction>(`/transactions/${id}`);
+    return response.data;
+  },
+
+  // Create transaction
+  create: async (data: CreateTransactionData): Promise<Transaction> => {
+    const response = await apiClient.post<Transaction>('/transactions', data);
+    return response.data;
+  },
+
+  // Update transaction
+  update: async (id: string, data: Partial<CreateTransactionData>): Promise<Transaction> => {
+    const response = await apiClient.put<Transaction>(`/transactions/${id}`, data);
+    return response.data;
+  },
+
+  // Delete transaction
+  delete: async (id: string): Promise<void> => {
+    await apiClient.delete(`/transactions/${id}`);
+  },
+
+  // Get transactions by date range
+  getByDateRange: async (startDate: string, endDate: string): Promise<Transaction[]> => {
+    const response = await apiClient.get<Transaction[]>('/transactions', {
+      params: { startDate, endDate }
+    });
+    return response.data;
+  },
+
+  // Get transactions by type
+  getByType: async (type: 'INCOME' | 'EXPENSE'): Promise<Transaction[]> => {
+    const response = await apiClient.get<Transaction[]>('/transactions', {
+      params: { type }
+    });
+    return response.data;
+  },
+};
+
+export default transactionService;
