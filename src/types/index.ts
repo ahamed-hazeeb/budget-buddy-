@@ -81,10 +81,14 @@ export interface Category {
 
 export interface Account {
   id: string;
-  name: string;
-  type: 'Cash' | 'Bank' | 'Card' | 'Other';
-  balance: number;
+  name?: string; // Optional: for display purposes
+  account_type?: string; // Backend field
+  type?: 'Cash' | 'Bank' | 'Card' | 'Other'; // Frontend field
+  balance: number | string; // Backend returns string
+  user_id?: number;
   userId?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface MonthlySummary {

@@ -73,7 +73,12 @@ const Transactions: React.FC = () => {
 
   const accountMap = useMemo(() => {
     return accounts.reduce((acc, acc_item) => {
-      acc[acc_item.id] = acc_item.name;
+      // Generate display name from account_type or use name if available
+      const displayName = acc_item.name || 
+                          (acc_item.account_type 
+                            ? acc_item.account_type.charAt(0).toUpperCase() + acc_item.account_type.slice(1) + ' Account'
+                            : `Account ${acc_item.id}`);
+      acc[acc_item.id] = displayName;
       return acc;
     }, {} as Record<string, string>);
   }, [accounts]);
@@ -495,9 +500,15 @@ const Transactions: React.FC = () => {
                   <option value="">
                     {accountsLoading ? 'Loading accounts...' : accounts.length === 0 ? 'No accounts available' : 'Select account'}
                   </option>
-                  {accounts.map((acc) => (
-                    <option key={acc.id} value={acc.id}>{acc.name}</option>
-                  ))}
+                  {accounts.map((acc) => {
+                    const displayName = acc.name || 
+                                       (acc.account_type 
+                                         ? acc.account_type.charAt(0).toUpperCase() + acc.account_type.slice(1) + ' Account'
+                                         : `Account ${acc.id}`);
+                    return (
+                      <option key={acc.id} value={acc.id}>{displayName}</option>
+                    );
+                  })}
                 </select>
                 {accountsError && (
                   <p className="text-xs text-red-600 mt-1">Failed to load accounts. Please refresh the page.</p>
