@@ -6,8 +6,14 @@ export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, '.', '');
     return {
       server: {
-        port: 3000,
+        port: 3001,
         host: '0.0.0.0',
+        proxy: {
+          '/api': {
+            target: 'http://localhost:3000',
+            changeOrigin: true,
+          }
+        }
       },
       plugins: [react()],
       define: {
@@ -18,6 +24,18 @@ export default defineConfig(({ mode }) => {
         alias: {
           '@': path.resolve(__dirname, '.'),
         }
+      },
+      build: {
+        rollupOptions: {
+          output: {
+            manualChunks: {
+              'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+              'chart-vendor': ['recharts'],
+              'query-vendor': ['@tanstack/react-query'],
+            }
+          }
+        },
+        chunkSizeWarningLimit: 1000,
       }
     };
 });
