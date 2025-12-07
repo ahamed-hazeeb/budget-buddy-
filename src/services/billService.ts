@@ -1,5 +1,6 @@
 import apiClient from '../api/client';
 import { Bill } from '../types';
+import { getUserId } from '../utils/auth';
 
 export interface CreateBillData {
   title: string;
@@ -12,7 +13,8 @@ export interface CreateBillData {
 const billService = {
   // Get all bills
   getAll: async (): Promise<Bill[]> => {
-    const response = await apiClient.get<Bill[]>('/bills');
+    const userId = getUserId();
+    const response = await apiClient.get<Bill[]>(`/bills/${userId}`);
     return response.data;
   },
 

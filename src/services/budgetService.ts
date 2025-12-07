@@ -1,5 +1,6 @@
 import apiClient from '../api/client';
 import { Budget } from '../types';
+import { getUserId } from '../utils/auth';
 
 export interface CreateBudgetData {
   category: string;
@@ -18,9 +19,10 @@ export interface BudgetSpendingResponse {
 }
 
 const budgetService = {
-  // Get all budgets
+  // Get overall budget
   getAll: async (): Promise<Budget[]> => {
-    const response = await apiClient.get<Budget[]>('/budgets');
+    const userId = getUserId();
+    const response = await apiClient.get<Budget[]>(`/budgets/overall/${userId}`);
     return response.data;
   },
 
@@ -32,13 +34,14 @@ const budgetService = {
 
   // Create budget
   create: async (data: CreateBudgetData): Promise<Budget> => {
-    const response = await apiClient.post<Budget>('/budgets', data);
+    const response = await apiClient.post<Budget>('/budgets/overall', data);
     return response.data;
   },
 
   // Update budget
   update: async (id: string, data: Partial<CreateBudgetData>): Promise<Budget> => {
-    const response = await apiClient.put<Budget>(`/budgets/${id}`, data);
+    // Backend uses POST for both create and update
+    const response = await apiClient.post<Budget>('/budgets/overall', { id, ...data });
     return response.data;
   },
 
@@ -48,18 +51,22 @@ const budgetService = {
   },
 
   // Get budget spending
-  getSpending: async (budgetId: string): Promise<BudgetSpendingResponse> => {
-    const response = await apiClient.get<BudgetSpendingResponse>(`/budgets/${budgetId}/spending`);
+  getSpending: async (startDate?: string, endDate?: string): Promise<BudgetSpendingResponse> => {
+    const params = new URLSearchParams();
+    if (startDate) params.append('start_date', startDate);
+    if (endDate) params.append('end_date', endDate);
+    const response = await apiClient.get<BudgetSpendingResponse>(`/budgets/spending?${params.toString()}`);
     return response.data;
   },
 
   // Get current month's budgets
   getCurrentMonth: async (): Promise<Budget[]> => {
+    const userId = getUserId();
     const now = new Date();
     const startDate = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
     const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
     
-    const response = await apiClient.get<Budget[]>('/budgets', {
+    const response = await apiClient.get<Budget[]>(`/budgets/overall/${userId}`, {
       params: { startDate, endDate }
     });
     return response.data;
