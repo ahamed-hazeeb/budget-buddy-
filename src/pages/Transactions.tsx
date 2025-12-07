@@ -56,8 +56,10 @@ const Transactions: React.FC = () => {
   // Filter categories: global (user_id = null) + current user's categories
   const categories = useMemo(() => {
     return allCategories.filter(cat => {
-      const userId = cat.userId ? parseInt(cat.userId) : null;
-      return userId === null || userId === currentUserId;
+      if (!cat.userId) return true; // Global category (null/undefined)
+      const userId = parseInt(cat.userId);
+      if (isNaN(userId)) return false; // Invalid userId
+      return userId === currentUserId;
     });
   }, [allCategories, currentUserId]);
 
@@ -105,8 +107,9 @@ const Transactions: React.FC = () => {
   // Filter and search transactions
   const filteredTransactions = useMemo(() => {
     return transactions.filter(t => {
-      // Filter by type
-      const typeMatch = filterType === 'ALL' || t.type?.toString().toUpperCase() === filterType;
+      // Filter by type - handle null/undefined and normalize to uppercase
+      const txnType = t.type ? t.type.toString().toUpperCase() : '';
+      const typeMatch = filterType === 'ALL' || txnType === filterType;
       
       // Filter by search query
       const categoryName = t.category_id ? categoryMap[t.category_id] : (t.category || '');
@@ -124,11 +127,17 @@ const Transactions: React.FC = () => {
   // Calculate stats
   const stats = useMemo(() => {
     const income = transactions
-      .filter(t => t.type?.toString().toLowerCase() === 'income')
+      .filter(t => {
+        const txnType = t.type ? t.type.toString().toLowerCase() : '';
+        return txnType === 'income';
+      })
       .reduce((sum, t) => sum + Number(t.amount), 0);
     
     const expenses = transactions
-      .filter(t => t.type?.toString().toLowerCase() === 'expense')
+      .filter(t => {
+        const txnType = t.type ? t.type.toString().toLowerCase() : '';
+        return txnType === 'expense';
+      })
       .reduce((sum, t) => sum + Number(t.amount), 0);
     
     return { income, expenses, balance: income - expenses };
@@ -354,6 +363,8 @@ const Transactions: React.FC = () => {
                 {filteredTransactions.map((txn) => {
                   const categoryName = txn.category_id ? (categoryMap[txn.category_id] || 'Uncategorized') : (txn.category || 'Uncategorized');
                   const accountName = txn.account_id ? (accountMap[txn.account_id] || 'Unknown') : (txn.account || 'Unknown');
+                  const txnType = txn.type ? txn.type.toString().toLowerCase() : '';
+                  const isIncome = txnType === 'income';
                   
                   return (
                     <tr key={txn.id} className="hover:bg-slate-50 transition-colors">
@@ -366,8 +377,8 @@ const Transactions: React.FC = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">{accountName}</td>
                       <td className="px-6 py-4 text-sm text-slate-500">{txn.note || '-'}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-semibold">
-                        <span className={txn.type?.toString().toLowerCase() === 'income' ? 'text-green-600' : 'text-red-600'}>
-                          {txn.type?.toString().toLowerCase() === 'income' ? '+' : '-'} Rs. {txn.amount.toLocaleString()}
+                        <span className={isIncome ? 'text-green-600' : 'text-red-600'}>
+                          {isIncome ? '+' : '-'} Rs. {txn.amount.toLocaleString()}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center">
