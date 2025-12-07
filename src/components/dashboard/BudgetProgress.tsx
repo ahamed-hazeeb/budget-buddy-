@@ -58,8 +58,11 @@ const BudgetProgress: React.FC<BudgetProgressProps> = ({ budgets, limit = 3 }) =
 
       <div className="p-6 space-y-6">
         {displayBudgets.map((budget) => {
-          const percentage = (budget.spent / budget.limit) * 100;
-          const remaining = budget.limit - budget.spent;
+          // Ensure we have valid numbers, default to 0 if undefined
+          const spent = budget.spent ?? 0;
+          const limit = budget.limit ?? 0;
+          const percentage = limit > 0 ? (spent / limit) * 100 : 0;
+          const remaining = limit - spent;
 
           return (
             <div key={budget.id}>
@@ -70,7 +73,7 @@ const BudgetProgress: React.FC<BudgetProgressProps> = ({ budgets, limit = 3 }) =
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-semibold text-slate-900">
-                    {formatCurrency(budget.spent)} / {formatCurrency(budget.limit)}
+                    {formatCurrency(spent)} / {formatCurrency(limit)}
                   </p>
                   <p className={`text-xs ${remaining >= 0 ? 'text-slate-500' : 'text-red-600'}`}>
                     {remaining >= 0 

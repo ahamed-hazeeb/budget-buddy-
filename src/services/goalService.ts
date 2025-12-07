@@ -1,5 +1,6 @@
 import apiClient from '../api/client';
 import { Goal } from '../types';
+import { getUserId } from '../utils/auth';
 
 export interface CreateGoalData {
   name: string;
@@ -12,7 +13,8 @@ export interface CreateGoalData {
 const goalService = {
   // Get all goals
   getAll: async (): Promise<Goal[]> => {
-    const response = await apiClient.get<Goal[]>('/goals');
+    const userId = getUserId();
+    const response = await apiClient.get<Goal[]>(`/goals/${userId}`);
     return response.data;
   },
 

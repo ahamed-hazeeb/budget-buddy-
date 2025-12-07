@@ -1,5 +1,6 @@
 import apiClient from '../api/client';
 import { Transaction } from '../types';
+import { getUserId } from '../utils/auth';
 
 export interface CreateTransactionData {
   date: string;
@@ -17,7 +18,8 @@ export interface UpdateTransactionData extends Partial<CreateTransactionData> {
 const transactionService = {
   // Get all transactions
   getAll: async (): Promise<Transaction[]> => {
-    const response = await apiClient.get<Transaction[]>('/transactions');
+    const userId = getUserId();
+    const response = await apiClient.get<Transaction[]>(`/transactions/${userId}`);
     return response.data;
   },
 
@@ -46,7 +48,8 @@ const transactionService = {
 
   // Get transactions by date range
   getByDateRange: async (startDate: string, endDate: string): Promise<Transaction[]> => {
-    const response = await apiClient.get<Transaction[]>('/transactions', {
+    const userId = getUserId();
+    const response = await apiClient.get<Transaction[]>(`/transactions/${userId}`, {
       params: { startDate, endDate }
     });
     return response.data;
@@ -54,7 +57,8 @@ const transactionService = {
 
   // Get transactions by type
   getByType: async (type: 'INCOME' | 'EXPENSE'): Promise<Transaction[]> => {
-    const response = await apiClient.get<Transaction[]>('/transactions', {
+    const userId = getUserId();
+    const response = await apiClient.get<Transaction[]>(`/transactions/${userId}`, {
       params: { type }
     });
     return response.data;

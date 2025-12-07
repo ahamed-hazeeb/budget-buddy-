@@ -1,5 +1,6 @@
 import apiClient from '../api/client';
 import { Account } from '../types';
+import { getUserId } from '../utils/auth';
 
 export interface CreateAccountData {
   name: string;
@@ -10,7 +11,8 @@ export interface CreateAccountData {
 const accountService = {
   // Get all accounts
   getAll: async (): Promise<Account[]> => {
-    const response = await apiClient.get<Account[]>('/accounts');
+    const userId = getUserId();
+    const response = await apiClient.get<Account[]>(`/accounts/${userId}`);
     return response.data;
   },
 
@@ -28,6 +30,15 @@ const accountService = {
 
   // Update account
   update: async (id: string, data: Partial<CreateAccountData>): Promise<Account> => {
+    // Backend uses /accounts/balance for balance updates
+    if ('balance' in data && Object.keys(data).length === 1) {
+      const response = await apiClient.put<Account>('/accounts/balance', {
+        account_id: id,
+        new_balance: data.balance
+      });
+      return response.data;
+    }
+    // For other updates, use the standard PUT endpoint
     const response = await apiClient.put<Account>(`/accounts/${id}`, data);
     return response.data;
   },

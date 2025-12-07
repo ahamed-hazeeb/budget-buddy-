@@ -1,5 +1,6 @@
 import apiClient from '../api/client';
 import { Category } from '../types';
+import { getUserId } from '../utils/auth';
 
 export interface CreateCategoryData {
   name: string;
@@ -9,7 +10,8 @@ export interface CreateCategoryData {
 const categoryService = {
   // Get all categories
   getAll: async (): Promise<Category[]> => {
-    const response = await apiClient.get<Category[]>('/categories');
+    const userId = getUserId();
+    const response = await apiClient.get<Category[]>(`/categories/${userId}`);
     return response.data;
   },
 
@@ -38,7 +40,8 @@ const categoryService = {
 
   // Get categories by type
   getByType: async (type: 'INCOME' | 'EXPENSE'): Promise<Category[]> => {
-    const response = await apiClient.get<Category[]>('/categories', {
+    const userId = getUserId();
+    const response = await apiClient.get<Category[]>(`/categories/${userId}`, {
       params: { type }
     });
     return response.data;
