@@ -22,8 +22,12 @@ const budgetService = {
   // Get overall budget
   getAll: async (): Promise<Budget[]> => {
     const userId = getUserId();
-    const response = await apiClient.get<Budget[]>(`/budgets/overall/${userId}`);
-    return response.data;
+    const response = await apiClient.get(`/budgets/overall/${userId}`);
+    // Backend returns a single budget object, wrap it in an array
+    const data = response.data;
+    if (!data) return [];
+    // If it's already an array, return it; otherwise wrap single object in array
+    return Array.isArray(data) ? data : [data];
   },
 
   // Get budget by ID
@@ -66,10 +70,14 @@ const budgetService = {
     const startDate = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
     const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
     
-    const response = await apiClient.get<Budget[]>(`/budgets/overall/${userId}`, {
+    const response = await apiClient.get(`/budgets/overall/${userId}`, {
       params: { startDate, endDate }
     });
-    return response.data;
+    // Backend returns a single budget object, wrap it in an array
+    const data = response.data;
+    if (!data) return [];
+    // If it's already an array, return it; otherwise wrap single object in array
+    return Array.isArray(data) ? data : [data];
   },
 };
 
