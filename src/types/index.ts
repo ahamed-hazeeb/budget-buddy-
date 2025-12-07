@@ -18,9 +18,11 @@ export interface Transaction {
   id: string;
   date: string; // ISO Date string (YYYY-MM-DD)
   amount: number;
-  category: string;
-  account: string;
-  type: TransactionType;
+  category?: string;        // Optional: category name from JOIN
+  category_id?: number;     // Category ID reference
+  account?: string;         // Optional: account name from JOIN  
+  account_id?: number;      // Account ID reference
+  type: TransactionType | 'income' | 'expense' | 'savings' | 'bill';  // Backend returns lowercase strings
   note?: string;
   userId?: string;
   createdAt?: string;
