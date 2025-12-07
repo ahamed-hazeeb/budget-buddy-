@@ -1,8 +1,7 @@
-
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Wallet, PiggyBank, Bell, PieChart, LogOut, Menu, X, CreditCard } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 
 interface LayoutProps {
   children: React.ReactNode;

@@ -31,7 +31,10 @@ const transactionService = {
 
   // Create transaction
   create: async (data: CreateTransactionData): Promise<Transaction> => {
-    const response = await apiClient.post<Transaction>('/transactions', data);
+    const response = await apiClient.post<Transaction>('/transactions', {
+      ...data,
+      user_id: getUserId()
+    });
     return response.data;
   },
 

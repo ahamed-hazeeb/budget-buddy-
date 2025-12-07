@@ -26,7 +26,10 @@ const billService = {
 
   // Create bill
   create: async (data: CreateBillData): Promise<Bill> => {
-    const response = await apiClient.post<Bill>('/bills', data);
+    const response = await apiClient.post<Bill>('/bills', {
+      ...data,
+      user_id: getUserId()
+    });
     return response.data;
   },
 
