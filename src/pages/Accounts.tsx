@@ -1,11 +1,12 @@
-
-import React, { useEffect, useState } from 'react';
-import { ApiService } from '../services/api';
-import { Account } from '../types';
+import React, { useState, useEffect } from 'react';
 import { CreditCard, Landmark, Banknote, Plus, X, Trash2 } from 'lucide-react';
+import { useAccounts, useCreateAccount, useDeleteAccount } from '../hooks/useAccounts';
+import LoadingSpinner from '../components/common/LoadingSpinner';
 
 const Accounts: React.FC = () => {
-  const [accounts, setAccounts] = useState<Account[]>([]);
+  const { data: accounts = [], isLoading } = useAccounts();
+  const createAccount = useCreateAccount();
+  const deleteAccount = useDeleteAccount();
   const [totalBalance, setTotalBalance] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   
@@ -17,21 +18,15 @@ const Accounts: React.FC = () => {
   });
 
   useEffect(() => {
-    loadAccounts();
-  }, []);
-
-  const loadAccounts = async () => {
-    const data = await ApiService.getAccounts();
-    setAccounts(data);
-    const total = data.reduce((sum, acc) => sum + acc.balance, 0);
+    const total = accounts.reduce((sum, acc) => sum + acc.balance, 0);
     setTotalBalance(total);
-  };
+  }, [accounts]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newAccount.name || !newAccount.balance) return;
 
-    await ApiService.addAccount({
+    await createAccount.mutateAsync({
       name: newAccount.name,
       type: newAccount.type,
       balance: parseFloat(newAccount.balance)
@@ -39,15 +34,13 @@ const Accounts: React.FC = () => {
 
     setIsModalOpen(false);
     setNewAccount({ name: '', type: 'Cash', balance: '' });
-    loadAccounts();
   };
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this account?")) {
-        await ApiService.deleteAccount(id);
-        loadAccounts();
+  const handleDelete = async (id: string, name: string) => {
+    if (window.confirm(`Are you sure you want to delete "${name}"?`)) {
+      await deleteAccount.mutateAsync(id);
     }
-  }
+  };
 
   const getIcon = (type: string) => {
     switch(type) {
@@ -64,6 +57,14 @@ const Accounts: React.FC = () => {
       default: return 'bg-green-100 text-green-600';
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
@@ -87,30 +88,44 @@ const Accounts: React.FC = () => {
       </div>
 
       {/* Accounts Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {accounts.map((acc) => (
-          <div key={acc.id} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow relative group">
-            <div className="flex items-start justify-between mb-4">
-              <div className={`p-3 rounded-xl ${getColor(acc.type)}`}>
-                {getIcon(acc.type)}
+      {accounts.length === 0 ? (
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-12 text-center">
+          <CreditCard size={48} className="mx-auto text-slate-300 mb-4" />
+          <h3 className="text-lg font-semibold text-slate-900 mb-2">No accounts yet</h3>
+          <p className="text-slate-500 mb-4">Add your first account to start tracking your finances.</p>
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium inline-flex items-center gap-2"
+          >
+            <Plus size={18} /> Add Your First Account
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {accounts.map((acc) => (
+            <div key={acc.id} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow relative group">
+              <div className="flex items-start justify-between mb-4">
+                <div className={`p-3 rounded-xl ${getColor(acc.type)}`}>
+                  {getIcon(acc.type)}
+                </div>
+                <div className={`px-2 py-1 rounded text-xs font-bold uppercase tracking-wider ${getColor(acc.type)}`}>
+                  {acc.type}
+                </div>
               </div>
-              <div className={`px-2 py-1 rounded text-xs font-bold uppercase tracking-wider ${getColor(acc.type)}`}>
-                {acc.type}
-              </div>
-            </div>
-            
-            <h3 className="text-lg font-bold text-slate-800">{acc.name}</h3>
-            <p className="text-2xl font-bold text-slate-900 mt-2">Rs. {acc.balance.toLocaleString()}</p>
-            
-            <button 
-                onClick={() => handleDelete(acc.id)}
+              
+              <h3 className="text-lg font-bold text-slate-800">{acc.name}</h3>
+              <p className="text-2xl font-bold text-slate-900 mt-2">Rs. {acc.balance.toLocaleString()}</p>
+              
+              <button 
+                onClick={() => handleDelete(acc.id, acc.name)}
                 className="absolute top-4 right-4 text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
-            >
+              >
                 <Trash2 size={18} />
-            </button>
-          </div>
-        ))}
-      </div>
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Add Account Modal */}
       {isModalOpen && (
@@ -150,23 +165,32 @@ const Accounts: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1">Initial Balance (Rs)</label>
+                <label className="block text-xs font-semibold text-slate-500 mb-1">Current Balance</label>
                 <input 
                   type="number" 
                   required
+                  step="0.01"
                   placeholder="0.00"
                   value={newAccount.balance}
                   onChange={(e) => setNewAccount({...newAccount, balance: e.target.value})}
-                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none font-bold text-lg"
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                 />
               </div>
 
-              <div className="pt-2">
+              <div className="flex gap-3 pt-2">
+                <button 
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="flex-1 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium transition-colors"
+                >
+                  Cancel
+                </button>
                 <button 
                   type="submit"
-                  className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-md transition-transform active:scale-95"
+                  disabled={createAccount.isPending}
+                  className="flex-1 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
                 >
-                  Create Account
+                  {createAccount.isPending ? 'Adding...' : 'Add Account'}
                 </button>
               </div>
             </form>

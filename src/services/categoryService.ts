@@ -23,7 +23,10 @@ const categoryService = {
 
   // Create category
   create: async (data: CreateCategoryData): Promise<Category> => {
-    const response = await apiClient.post<Category>('/categories', data);
+    const response = await apiClient.post<Category>('/categories', {
+      ...data,
+      user_id: getUserId()
+    });
     return response.data;
   },
 

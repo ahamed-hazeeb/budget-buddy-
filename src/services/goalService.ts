@@ -26,7 +26,10 @@ const goalService = {
 
   // Create goal
   create: async (data: CreateGoalData): Promise<Goal> => {
-    const response = await apiClient.post<Goal>('/goals', data);
+    const response = await apiClient.post<Goal>('/goals', {
+      ...data,
+      user_id: getUserId()
+    });
     return response.data;
   },
 
