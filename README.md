@@ -68,11 +68,19 @@ The frontend gracefully handles missing backend endpoints. See [BACKEND_SETUP.md
 - Ensure `src/vite-env.d.ts` exists
 - Run `npm install` to get type definitions
 
-### 404 Errors in Console
-- Normal if backend endpoints aren't implemented yet
-- Check [BACKEND_SETUP.md](BACKEND_SETUP.md) for required endpoints
-- UI will show "No data" states gracefully
+### ❌ 404 Errors: "API endpoint not found"
+**This is the most common issue.** See **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** for complete guide.
+
+Quick fix:
+1. Check if backend is running: `curl http://localhost:3000/api`
+2. Verify backend routes have `/api` prefix
+3. Check CORS is configured for `http://localhost:3001`
+
+### 🔥 500 Internal Server Error
+Backend is running but has an error. Check your backend console logs.
 
 ### CORS Errors
 - Backend must allow `http://localhost:3001` origin
 - See CORS configuration in [BACKEND_SETUP.md](BACKEND_SETUP.md)
+
+**Still stuck?** Read the complete [TROUBLESHOOTING.md](TROUBLESHOOTING.md) guide.
