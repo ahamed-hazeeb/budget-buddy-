@@ -15,8 +15,8 @@ const Transactions: React.FC = () => {
 
   // Fetch data
   const { data: transactions = [], isLoading: txnLoading } = useTransactions();
-  const { data: accounts = [] } = useAccounts();
-  const { data: allCategories = [] } = useCategories();
+  const { data: accounts = [], isLoading: accountsLoading, isError: accountsError } = useAccounts();
+  const { data: allCategories = [], isLoading: categoriesLoading, isError: categoriesError } = useCategories();
   
   // Mutations
   const createTransaction = useCreateTransaction();
@@ -452,13 +452,22 @@ const Transactions: React.FC = () => {
                   required
                   value={formData.category_id}
                   onChange={handleInputChange}
-                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                  disabled={categoriesLoading}
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <option value="">Select category</option>
+                  <option value="">
+                    {categoriesLoading ? 'Loading categories...' : filteredCategories.length === 0 ? 'No categories available' : 'Select category'}
+                  </option>
                   {filteredCategories.map((cat) => (
                     <option key={cat.id} value={cat.id}>{cat.name}</option>
                   ))}
                 </select>
+                {categoriesError && (
+                  <p className="text-xs text-red-600 mt-1">Failed to load categories. Please refresh the page.</p>
+                )}
+                {!categoriesLoading && !categoriesError && filteredCategories.length === 0 && (
+                  <p className="text-xs text-amber-600 mt-1">No {formData.type.toLowerCase()} categories available. Click "+ New Category" to create one.</p>
+                )}
               </div>
 
               <div>
@@ -480,13 +489,22 @@ const Transactions: React.FC = () => {
                   required
                   value={formData.account_id}
                   onChange={handleInputChange}
-                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                  disabled={accountsLoading}
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <option value="">Select account</option>
+                  <option value="">
+                    {accountsLoading ? 'Loading accounts...' : accounts.length === 0 ? 'No accounts available' : 'Select account'}
+                  </option>
                   {accounts.map((acc) => (
                     <option key={acc.id} value={acc.id}>{acc.name}</option>
                   ))}
                 </select>
+                {accountsError && (
+                  <p className="text-xs text-red-600 mt-1">Failed to load accounts. Please refresh the page.</p>
+                )}
+                {!accountsLoading && !accountsError && accounts.length === 0 && (
+                  <p className="text-xs text-amber-600 mt-1">Please create an account first from the Accounts page.</p>
+                )}
               </div>
 
               <div>
