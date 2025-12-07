@@ -3,9 +3,11 @@ import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 
-// Import Layout and pages from the old structure
+// Import Layout from the old structure
 import Layout from '../components/Layout';
-import Dashboard from '../pages/Dashboard';
+
+// Import pages - use new Dashboard, keep old pages for now
+import Dashboard from './pages/Dashboard';
 import Transactions from '../pages/Transactions';
 import BudgetPage from '../pages/Budget';
 import GoalsPage from '../pages/Goals';
