@@ -25,6 +25,7 @@ const categoryService = {
   create: async (data: CreateCategoryData): Promise<Category> => {
     const response = await apiClient.post<Category>('/categories', {
       ...data,
+      type: data.type.toLowerCase(), // Backend expects lowercase
       user_id: getUserId()
     });
     return response.data;
@@ -32,7 +33,12 @@ const categoryService = {
 
   // Update category
   update: async (id: string, data: Partial<CreateCategoryData>): Promise<Category> => {
-    const response = await apiClient.put<Category>(`/categories/${id}`, data);
+    const payload = { ...data };
+    // Backend expects lowercase type
+    if (payload.type) {
+      payload.type = payload.type.toLowerCase() as 'INCOME' | 'EXPENSE';
+    }
+    const response = await apiClient.put<Category>(`/categories/${id}`, payload);
     return response.data;
   },
 
@@ -45,7 +51,7 @@ const categoryService = {
   getByType: async (type: 'INCOME' | 'EXPENSE'): Promise<Category[]> => {
     const userId = getUserId();
     const response = await apiClient.get<Category[]>(`/categories/${userId}`, {
-      params: { type }
+      params: { type: type.toLowerCase() } // Backend expects lowercase
     });
     return response.data;
   },
