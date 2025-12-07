@@ -4,17 +4,15 @@ import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
 
-// Import pages from src/pages - all using real backend
+// All pages now import from src/pages - using real backend or placeholders
 import Dashboard from './pages/Dashboard';
-// TODO: Create these pages in src/pages/ to use real backend
-// For now, importing from old location until migrated
-import Transactions from '../pages/Transactions';
-import BudgetPage from '../pages/Budget';
-import GoalsPage from '../pages/Goals';
-import Reminders from '../pages/Reminders';
-import Login from '../pages/Login';
-import SignUp from '../pages/SignUp';
-import Accounts from '../pages/Accounts';
+import Login from './pages/Login';
+import SignUp from './pages/SignUp';
+import Transactions from './pages/Transactions';
+import Budget from './pages/Budget';
+import Goals from './pages/Goals';
+import Reminders from './pages/Reminders';
+import Accounts from './pages/Accounts';
 
 const App: React.FC = () => {
   return (
@@ -45,7 +43,7 @@ const App: React.FC = () => {
           <Route path="/budget" element={
             <ProtectedRoute>
               <Layout>
-                <BudgetPage />
+                <Budget />
               </Layout>
             </ProtectedRoute>
           } />
@@ -53,7 +51,7 @@ const App: React.FC = () => {
           <Route path="/goals" element={
             <ProtectedRoute>
               <Layout>
-                <GoalsPage />
+                <Goals />
               </Layout>
             </ProtectedRoute>
           } />
