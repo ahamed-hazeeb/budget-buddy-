@@ -5,9 +5,9 @@ import { getUserId } from '../utils/auth';
 export interface CreateTransactionData {
   date: string;
   amount: number;
-  category: string;
-  account: string;
-  type: 'INCOME' | 'EXPENSE';
+  category_id: number;
+  account_id: number;
+  type: 'INCOME' | 'EXPENSE' | 'income' | 'expense';
   note?: string;
 }
 
