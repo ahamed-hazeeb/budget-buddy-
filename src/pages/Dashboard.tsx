@@ -17,6 +17,7 @@ import { useMLInsights } from '../hooks/useMLInsights';
 
 // Utils
 import accountService from '../services/accountService';
+import categoryService from '../services/categoryService';
 import { useQuery } from '@tanstack/react-query';
 import { QUERY_KEYS } from '../utils/constants';
 import { TransactionType } from '../types';
@@ -27,13 +28,19 @@ const Dashboard: React.FC = () => {
   const { data: budgets = [], isLoading: budgetsLoading } = useBudgets();
   const { data: mlInsightsData, isLoading: mlLoading } = useMLInsights();
   
+  // Fetch categories for chart data mapping
+  const { data: categories = [], isLoading: categoriesLoading } = useQuery({
+    queryKey: [QUERY_KEYS.CATEGORIES],
+    queryFn: categoryService.getAll,
+  });
+  
   // Fetch accounts for balance calculation
   const { data: accounts = [] } = useQuery({
     queryKey: [QUERY_KEYS.ACCOUNTS],
     queryFn: accountService.getAll,
   });
 
-  const isLoading = txnLoading || budgetsLoading;
+  const isLoading = txnLoading || budgetsLoading || categoriesLoading;
 
   // Calculate summary from transactions
   const totalIncome = transactions
@@ -60,13 +67,38 @@ const Dashboard: React.FC = () => {
     { name: 'Expense', value: totalExpenses || 0, color: '#ef4444' },
   ];
 
-  // Expense breakdown by category
+  // DEBUG: Log data to verify
+  console.log('📊 Dashboard Data:', {
+    transactions: transactions.length,
+    categories: categories.length,
+    sampleTransaction: transactions[0],
+    sampleCategory: categories[0]
+  });
+
+  // Create category ID to name lookup map
+  const categoryMap = categories.reduce((acc, cat) => {
+    acc[cat.id] = cat.name;
+    return acc;
+  }, {} as Record<string, string>);
+
+  console.log('🗂️ Category Map:', categoryMap);
+
+  // Expense breakdown by category - FIX: Use category_id with lookup
   const expensesByCategory = transactions
     .filter(t => t.type === TransactionType.EXPENSE)
     .reduce((acc, t) => {
-      acc[t.category] = (acc[t.category] || 0) + t.amount;
+      // Get category name from category_id using lookup map
+      const categoryName = t.category_id 
+        ? (categoryMap[t.category_id] || 'Uncategorized')
+        : (t.category || 'Uncategorized');
+      
+      console.log(`💸 Expense: ${t.amount} → ${categoryName} (category_id: ${t.category_id})`);
+      
+      acc[categoryName] = (acc[categoryName] || 0) + t.amount;
       return acc;
     }, {} as Record<string, number>);
+
+  console.log('📈 Expenses by Category:', expensesByCategory);
 
   const barData = Object.entries(expensesByCategory)
     .map(([name, amount]) => ({ name, amount }))
@@ -110,8 +142,11 @@ const Dashboard: React.FC = () => {
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
           <h3 className="text-lg font-bold text-slate-800 mb-4">Income vs Expenses</h3>
           {totalIncome === 0 && totalExpenses === 0 ? (
-            <div className="h-64 flex items-center justify-center text-slate-500">
-              No data available
+            <div className="h-64 flex flex-col items-center justify-center text-slate-500">
+              <p className="mb-2">No transactions yet</p>
+              <Link to="/transactions" className="text-blue-600 hover:underline text-sm">
+                Add your first transaction →
+              </Link>
             </div>
           ) : (
             <div className="h-64">
@@ -144,12 +179,18 @@ const Dashboard: React.FC = () => {
             </div>
           )}
           <div className="flex justify-center gap-6 mt-4">
-            {pieData.map((entry) => (
-              <div key={entry.name} className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.color }} />
-                <span className="text-sm font-medium text-slate-600">{entry.name}</span>
-              </div>
-            ))}
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-green-500" />
+              <span className="text-sm font-medium text-slate-600">
+                Income: Rs. {totalIncome.toLocaleString()}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-red-500" />
+              <span className="text-sm font-medium text-slate-600">
+                Expenses: Rs. {totalExpenses.toLocaleString()}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -157,8 +198,11 @@ const Dashboard: React.FC = () => {
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
           <h3 className="text-lg font-bold text-slate-800 mb-4">Top Expense Categories</h3>
           {barData.length === 0 ? (
-            <div className="h-64 flex items-center justify-center text-slate-500">
-              No expenses yet
+            <div className="h-64 flex flex-col items-center justify-center text-slate-500">
+              <p className="mb-2">No expense categories yet</p>
+              <Link to="/transactions?type=expense" className="text-blue-600 hover:underline text-sm">
+                Add an expense →
+              </Link>
             </div>
           ) : (
             <div className="h-64">
