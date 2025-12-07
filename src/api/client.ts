@@ -39,9 +39,18 @@ apiClient.interceptors.request.use(
 // Response interceptor - Handle errors
 apiClient.interceptors.response.use(
   (response) => {
+    // Log successful API calls
+    console.log('✅ API Success:', response.config.url, response.data);
     return response;
   },
   (error: AxiosError) => {
+    console.error('❌ API Error:', {
+      url: error.config?.url,
+      method: error.config?.method?.toUpperCase(),
+      status: error.response?.status,
+      data: error.response?.data
+    });
+
     if (error.response) {
       const { status, data } = error.response;
 

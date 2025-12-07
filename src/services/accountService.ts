@@ -24,7 +24,10 @@ const accountService = {
 
   // Create account
   create: async (data: CreateAccountData): Promise<Account> => {
-    const response = await apiClient.post<Account>('/accounts', data);
+    const response = await apiClient.post<Account>('/accounts', {
+      ...data,
+      user_id: getUserId()
+    });
     return response.data;
   },
 

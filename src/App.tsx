@@ -2,12 +2,12 @@ import React from 'react';
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import Layout from './components/Layout';
 
-// Import Layout from the old structure
-import Layout from '../components/Layout';
-
-// Import pages - use new Dashboard, keep old pages for now
+// Import pages from src/pages - all using real backend
 import Dashboard from './pages/Dashboard';
+// TODO: Create these pages in src/pages/ to use real backend
+// For now, importing from old location until migrated
 import Transactions from '../pages/Transactions';
 import BudgetPage from '../pages/Budget';
 import GoalsPage from '../pages/Goals';

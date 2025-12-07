@@ -56,7 +56,10 @@ const budgetService = {
 
   // Create budget
   create: async (data: CreateBudgetData): Promise<Budget> => {
-    const response = await apiClient.post<Budget>('/budgets/overall', data);
+    const response = await apiClient.post<Budget>('/budgets/overall', {
+      ...data,
+      user_id: getUserId()
+    });
     return response.data;
   },
 
