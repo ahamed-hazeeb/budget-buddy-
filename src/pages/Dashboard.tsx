@@ -79,7 +79,7 @@ const Dashboard: React.FC = () => {
   const categoryMap = categories.reduce((acc, cat) => {
     acc[cat.id] = cat.name;
     return acc;
-  }, {} as Record<string, string>);
+  }, {} as Record<string | number, string>);
 
   console.log('🗂️ Category Map:', categoryMap);
 
