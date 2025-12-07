@@ -112,8 +112,8 @@ const Transactions: React.FC = () => {
       const typeMatch = filterType === 'ALL' || txnType === filterType;
       
       // Filter by search query
-      const categoryName = t.category_id ? categoryMap[t.category_id] : (t.category || '');
-      const accountName = t.account_id ? accountMap[t.account_id] : (t.account || '');
+      const categoryName = t.category_id ? (categoryMap[t.category_id] || '') : (t.category || '');
+      const accountName = t.account_id ? (accountMap[t.account_id] || '') : (t.account || '');
       const searchMatch = !searchQuery || 
         categoryName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         accountName.toLowerCase().includes(searchQuery.toLowerCase()) ||
