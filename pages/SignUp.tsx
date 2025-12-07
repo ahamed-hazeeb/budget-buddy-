@@ -32,7 +32,7 @@ const SignUp: React.FC = () => {
     setIsSubmitting(true);
     
     try {
-      await register(name, email, password);
+      await register({ name, email, password });
       navigate('/');
     } catch (err) {
       setError('Failed to create account. Try again.');
