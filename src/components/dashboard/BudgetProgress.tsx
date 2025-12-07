@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { TrendingDown, AlertCircle } from 'lucide-react';
 import { Budget } from '../../types';
 import { formatCurrency, formatPercentage } from '../../utils/formatters';
+import { MAX_PERCENTAGE } from '../../utils/constants';
 
 interface BudgetProgressProps {
   budgets: Budget[];
@@ -84,20 +85,20 @@ const BudgetProgress: React.FC<BudgetProgressProps> = ({ budgets, limit = 3 }) =
               <div className={`w-full h-2 rounded-full ${getProgressBarColor(percentage)} overflow-hidden`}>
                 <div
                   className={`h-full ${getProgressColor(percentage)} transition-all duration-500`}
-                  style={{ width: `${Math.min(percentage, 100)}%` }}
+                  style={{ width: `${Math.min(percentage, MAX_PERCENTAGE)}%` }}
                 />
               </div>
 
               {/* Warning for over budget */}
-              {percentage > 100 && (
+              {percentage > MAX_PERCENTAGE && (
                 <div className="mt-2 flex items-center gap-1 text-xs text-red-600">
                   <AlertCircle size={14} />
-                  <span>Over budget by {formatPercentage(percentage - 100)}</span>
+                  <span>Over budget by {formatPercentage(percentage - MAX_PERCENTAGE)}</span>
                 </div>
               )}
 
               {/* Warning for near limit */}
-              {percentage >= 90 && percentage <= 100 && (
+              {percentage >= 90 && percentage <= MAX_PERCENTAGE && (
                 <div className="mt-2 flex items-center gap-1 text-xs text-orange-600">
                   <TrendingDown size={14} />
                   <span>Approaching limit ({formatPercentage(percentage)})</span>

@@ -100,3 +100,13 @@ export const ITEMS_PER_PAGE = 10;
 
 // Toast Duration
 export const TOAST_DURATION = 3000;
+
+// Authentication Messages
+export const AUTH_MESSAGES = {
+  SESSION_EXPIRED: 'Session expired. Please login again.',
+  NETWORK_ERROR: 'Network error. Please check your connection.',
+  UNEXPECTED_ERROR: 'An unexpected error occurred.',
+} as const;
+
+// Percentage Constants
+export const MAX_PERCENTAGE = 100;

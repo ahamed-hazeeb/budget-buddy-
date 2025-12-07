@@ -1,5 +1,6 @@
 import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 import toast from 'react-hot-toast';
+import { AUTH_MESSAGES } from '../utils/constants';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
 const API_TIMEOUT = parseInt(import.meta.env.VITE_API_TIMEOUT || '30000', 10);
@@ -41,12 +42,12 @@ apiClient.interceptors.response.use(
         localStorage.removeItem('bb_token');
         localStorage.removeItem('bb_user');
         window.location.href = '/login';
-        toast.error('Session expired. Please login again.');
+        toast.error(AUTH_MESSAGES.SESSION_EXPIRED);
         return Promise.reject(error);
       }
 
       // Handle other errors
-      const message = (data as any)?.message || 'An error occurred';
+      const message = (data as any)?.message || AUTH_MESSAGES.UNEXPECTED_ERROR;
       
       // Don't show toast for certain cases where we handle errors locally
       if (status !== 404) {
@@ -54,9 +55,9 @@ apiClient.interceptors.response.use(
       }
     } else if (error.request) {
       // Network error
-      toast.error('Network error. Please check your connection.');
+      toast.error(AUTH_MESSAGES.NETWORK_ERROR);
     } else {
-      toast.error('An unexpected error occurred.');
+      toast.error(AUTH_MESSAGES.UNEXPECTED_ERROR);
     }
 
     return Promise.reject(error);
