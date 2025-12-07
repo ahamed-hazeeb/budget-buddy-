@@ -22,7 +22,7 @@ export interface Transaction {
   category_id?: number;     // Category ID reference
   account?: string;         // Optional: account name from JOIN  
   account_id?: number;      // Account ID reference
-  type: TransactionType | string;  // Backend returns lowercase strings: "income", "expense", "savings"
+  type: TransactionType | 'income' | 'expense' | 'savings' | 'bill';  // Backend returns lowercase strings
   note?: string;
   userId?: string;
   createdAt?: string;
