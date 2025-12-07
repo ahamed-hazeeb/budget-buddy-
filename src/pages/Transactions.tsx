@@ -80,7 +80,7 @@ const Transactions: React.FC = () => {
 
   // Filter categories by transaction type
   const filteredCategories = useMemo(() => {
-    return categories.filter(cat => cat.type === formData.type);
+    return categories.filter(cat => cat.type.toUpperCase() === formData.type);
   }, [categories, formData.type]);
 
   useEffect(() => {
