@@ -79,3 +79,111 @@ export const useReversePlanGoal = () => {
     },
   });
 };
+
+// NEW ADVANCED ML HOOKS
+
+export const useAdvancedExpenseForecast = (months: number = 12) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.ML_ADVANCED_FORECAST, months],
+    queryFn: () => mlService.getAdvancedExpenseForecast(months),
+    staleTime: 30 * 60 * 1000, // 30 minutes
+    retry: false,
+  });
+};
+
+export const useHealthScore = () => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.ML_HEALTH_SCORE],
+    queryFn: mlService.getHealthScore,
+    staleTime: 24 * 60 * 60 * 1000, // 24 hours
+    retry: false,
+  });
+};
+
+export const useHealthTrends = () => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.ML_HEALTH_TRENDS],
+    queryFn: mlService.getHealthTrends,
+    staleTime: 24 * 60 * 60 * 1000,
+    retry: false,
+  });
+};
+
+export const useBenchmark = () => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.ML_BENCHMARK],
+    queryFn: mlService.getBenchmark,
+    staleTime: 7 * 24 * 60 * 60 * 1000, // 7 days
+    retry: false,
+  });
+};
+
+export const useBudgetRecommendations = (totalBudget: number) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.ML_BUDGET_RECOMMENDATIONS, totalBudget],
+    queryFn: () => mlService.getBudgetRecommendations(totalBudget),
+    enabled: totalBudget > 0,
+    staleTime: 60 * 60 * 1000, // 1 hour
+    retry: false,
+  });
+};
+
+export const useBudgetAlerts = () => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.ML_BUDGET_ALERTS],
+    queryFn: mlService.getBudgetAlerts,
+    staleTime: 15 * 60 * 1000, // 15 minutes
+    retry: false,
+  });
+};
+
+export const useOptimizeBudget = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: mlService.optimizeBudget,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ML_BUDGET_RECOMMENDATIONS] });
+      toast.success('Budget optimization completed');
+    },
+    onError: () => {
+      toast.error('Failed to optimize budget');
+    },
+  });
+};
+
+export const useSpendingHabits = () => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.ML_SPENDING_HABITS],
+    queryFn: mlService.getSpendingHabits,
+    staleTime: 24 * 60 * 60 * 1000, // 24 hours
+    retry: false,
+  });
+};
+
+export const useSavingsOpportunities = () => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.ML_SAVINGS_OPPORTUNITIES],
+    queryFn: mlService.getSavingsOpportunities,
+    staleTime: 24 * 60 * 60 * 1000, // 24 hours
+    retry: false,
+  });
+};
+
+export const useBehaviorNudges = () => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.ML_BEHAVIOR_NUDGES],
+    queryFn: mlService.getBehaviorNudges,
+    staleTime: 60 * 60 * 1000, // 1 hour
+    retry: false,
+  });
+};
+
+export const useModelPerformance = () => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.ML_MODEL_PERFORMANCE],
+    queryFn: mlService.getModelPerformance,
+    staleTime: 24 * 60 * 60 * 1000, // 24 hours
+    retry: false,
+  });
+};
