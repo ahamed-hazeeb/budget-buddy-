@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Wallet, PiggyBank, Bell, PieChart, LogOut, Menu, X, CreditCard } from 'lucide-react';
+import { LayoutDashboard, Wallet, PiggyBank, Bell, PieChart, LogOut, Menu, X, CreditCard, Brain } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 interface LayoutProps {
@@ -26,6 +26,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { to: '/goals', icon: PiggyBank, label: 'Future Plans' },
     { to: '/reminders', icon: Bell, label: 'Bill Reminders' },
     { to: '/accounts', icon: CreditCard, label: 'Accounts' },
+    { to: '/ml-insights', icon: Brain, label: 'AI Insights' },
   ];
 
   return (

@@ -13,6 +13,7 @@ import Budget from './pages/Budget';
 import Goals from './pages/Goals';
 import Reminders from './pages/Reminders';
 import Accounts from './pages/Accounts';
+import MLInsights from './pages/MLInsights';
 
 const App: React.FC = () => {
   return (
@@ -76,6 +77,14 @@ const App: React.FC = () => {
             <ProtectedRoute>
               <Layout>
                 <Accounts />
+              </Layout>
+            </ProtectedRoute>
+          } />
+
+          <Route path="/ml-insights" element={
+            <ProtectedRoute>
+              <Layout>
+                <MLInsights />
               </Layout>
             </ProtectedRoute>
           } />
