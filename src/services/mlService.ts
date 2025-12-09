@@ -1,4 +1,5 @@
 import apiClient from '../api/client';
+import { getUserId } from '../utils/auth';
 import {
   MLHealthResponse,
   MLTrainResponse,
@@ -99,14 +100,14 @@ const mlService = {
 
   // Get health score trends over time
   getHealthTrends: async (): Promise<HealthTrendsResponse> => {
-    const userId = 'me'; // Backend will use authenticated user
+    const userId = getUserId();
     const response = await apiClient.get<HealthTrendsResponse>(`/ml/insights/trends/${userId}`);
     return response.data;
   },
 
   // Compare with peer benchmarks
   getBenchmark: async (): Promise<BenchmarkData> => {
-    const userId = 'me';
+    const userId = getUserId();
     const response = await apiClient.get<BenchmarkData>(`/ml/insights/benchmark/${userId}`);
     return response.data;
   },
@@ -134,28 +135,28 @@ const mlService = {
 
   // Get spending habit analysis
   getSpendingHabits: async (): Promise<SpendingHabitsResponse> => {
-    const userId = 'me';
+    const userId = getUserId();
     const response = await apiClient.get<SpendingHabitsResponse>(`/ml/recommendations/habits/${userId}`);
     return response.data;
   },
 
   // Get savings opportunities
   getSavingsOpportunities: async (): Promise<SavingsOpportunitiesResponse> => {
-    const userId = 'me';
+    const userId = getUserId();
     const response = await apiClient.get<SavingsOpportunitiesResponse>(`/ml/recommendations/opportunities/${userId}`);
     return response.data;
   },
 
   // Get behavior nudges
   getBehaviorNudges: async (): Promise<BehaviorNudgesResponse> => {
-    const userId = 'me';
+    const userId = getUserId();
     const response = await apiClient.get<BehaviorNudgesResponse>(`/ml/recommendations/nudges/${userId}`);
     return response.data;
   },
 
   // Get model performance metrics
   getModelPerformance: async (): Promise<ModelPerformanceResponse> => {
-    const userId = 'me';
+    const userId = getUserId();
     const response = await apiClient.get<ModelPerformanceResponse>(`/ml/models/performance/${userId}`);
     return response.data;
   },
