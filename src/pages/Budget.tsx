@@ -1,14 +1,21 @@
 import React, { useState } from 'react';
-import { Sparkles, TrendingUp, AlertCircle, Plus, X } from 'lucide-react';
+import { Sparkles, TrendingUp, AlertCircle, Plus, X, Zap, Target } from 'lucide-react';
 import { useBudgets, useCreateBudget } from '../hooks/useBudget';
-import { useMLInsights } from '../hooks/useMLInsights';
+import { useMLInsights, useBudgetRecommendations, useBudgetAlerts, useOptimizeBudget } from '../hooks/useMLInsights';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import BudgetRecommendations from '../components/dashboard/BudgetRecommendations';
 
 const Budget: React.FC = () => {
   const { data: budgets = [], isLoading: budgetsLoading } = useBudgets();
   const { data: mlInsightsData, isLoading: mlLoading } = useMLInsights();
   const createBudget = useCreateBudget();
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // NEW: AI Budget Features
+  const totalBudget = budgets.reduce((sum, budget) => sum + Number(budget.limit), 0);
+  const { data: budgetRecommendations, isLoading: recommendationsLoading } = useBudgetRecommendations(totalBudget);
+  const { data: budgetAlerts, isLoading: alertsLoading } = useBudgetAlerts();
+  const optimizeBudget = useOptimizeBudget();
 
   const [formData, setFormData] = useState({
     category: 'Overall',
@@ -95,6 +102,86 @@ const Budget: React.FC = () => {
           {/* Decorative elements */}
           <div className="absolute right-0 top-0 opacity-10 p-8">
             <TrendingUp size={200} />
+          </div>
+        </div>
+      )}
+
+      {/* NEW: Budget Alerts Section */}
+      {budgetAlerts && budgetAlerts.alerts && budgetAlerts.alerts.length > 0 && (
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+              <AlertCircle className="text-orange-500" size={24} />
+              Budget Alerts ({budgetAlerts.critical_count} critical)
+            </h3>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {budgetAlerts.alerts.slice(0, 4).map((alert, index) => (
+              <div
+                key={index}
+                className={`border rounded-lg p-4 ${
+                  alert.status === 'critical' 
+                    ? 'bg-red-50 border-red-200' 
+                    : alert.status === 'warning'
+                    ? 'bg-orange-50 border-orange-200'
+                    : 'bg-green-50 border-green-200'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="font-semibold text-slate-800">{alert.category}</h4>
+                  <span className={`text-sm font-bold ${
+                    alert.status === 'critical' ? 'text-red-600' : 
+                    alert.status === 'warning' ? 'text-orange-600' : 'text-green-600'
+                  }`}>
+                    {alert.percentage_used.toFixed(0)}%
+                  </span>
+                </div>
+                <p className="text-sm text-slate-600 mb-2">{alert.message}</p>
+                <div className="text-xs text-slate-500 mb-2">
+                  Rs. {alert.current_spending.toLocaleString()} / Rs. {alert.budget_limit.toLocaleString()}
+                </div>
+                <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+                  <div
+                    className={`h-full ${
+                      alert.status === 'critical' ? 'bg-red-500' : 
+                      alert.status === 'warning' ? 'bg-orange-500' : 'bg-green-500'
+                    }`}
+                    style={{ width: `${Math.min(alert.percentage_used, 100)}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* NEW: AI Budget Recommendations */}
+      {totalBudget > 0 && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <BudgetRecommendations 
+              recommendations={budgetRecommendations} 
+              isLoading={recommendationsLoading}
+            />
+          </div>
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl shadow-sm border border-blue-100 p-6">
+            <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+              <Target className="text-blue-600" size={24} />
+              Quick Actions
+            </h3>
+            <div className="space-y-3">
+              <button
+                onClick={() => optimizeBudget.mutate()}
+                disabled={optimizeBudget.isPending}
+                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Zap size={18} />
+                {optimizeBudget.isPending ? 'Optimizing...' : 'Optimize Budget'}
+              </button>
+              <p className="text-xs text-slate-600 text-center">
+                Let AI rebalance your budget for maximum savings
+              </p>
+            </div>
           </div>
         </div>
       )}

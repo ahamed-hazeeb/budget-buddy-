@@ -93,6 +93,18 @@ export const QUERY_KEYS = {
   ML_INSIGHTS_SUMMARY: 'mlInsightsSummary',
   ML_HEALTH: 'mlHealth',
   DASHBOARD_SUMMARY: 'dashboardSummary',
+  // New ML Query Keys
+  ML_HEALTH_SCORE: 'ml-health-score',
+  ML_HEALTH_TRENDS: 'ml-health-trends',
+  ML_BENCHMARK: 'ml-benchmark',
+  ML_BUDGET_RECOMMENDATIONS: 'ml-budget-recommendations',
+  ML_BUDGET_ALERTS: 'ml-budget-alerts',
+  ML_BUDGET_OPTIMIZE: 'ml-budget-optimize',
+  ML_SPENDING_HABITS: 'ml-spending-habits',
+  ML_SAVINGS_OPPORTUNITIES: 'ml-savings-opportunities',
+  ML_BEHAVIOR_NUDGES: 'ml-behavior-nudges',
+  ML_ADVANCED_FORECAST: 'ml-advanced-forecast',
+  ML_MODEL_PERFORMANCE: 'ml-model-performance',
 } as const;
 
 // Pagination
@@ -110,3 +122,16 @@ export const AUTH_MESSAGES = {
 
 // Percentage Constants
 export const MAX_PERCENTAGE = 100;
+
+// Routes
+export const ROUTES = {
+  HOME: '/',
+  LOGIN: '/login',
+  SIGNUP: '/signup',
+  TRANSACTIONS: '/transactions',
+  BUDGET: '/budget',
+  GOALS: '/goals',
+  REMINDERS: '/reminders',
+  ACCOUNTS: '/accounts',
+  ML_INSIGHTS: '/ml-insights',
+} as const;

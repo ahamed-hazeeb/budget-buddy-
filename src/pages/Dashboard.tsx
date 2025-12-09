@@ -10,16 +10,32 @@ import BudgetProgress from '../components/dashboard/BudgetProgress';
 import MLInsights from '../components/dashboard/MLInsights';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 
+// NEW ML Components
+import HealthScoreCard from '../components/dashboard/HealthScoreCard';
+import ExpenseForecastChart from '../components/dashboard/ExpenseForecastChart';
+import BudgetRecommendations from '../components/dashboard/BudgetRecommendations';
+import SpendingHabits from '../components/dashboard/SpendingHabits';
+import BenchmarkCard from '../components/dashboard/BenchmarkCard';
+import BehaviorNudges from '../components/dashboard/BehaviorNudges';
+
 // Hooks
 import { useTransactions } from '../hooks/useTransactions';
 import { useBudgets } from '../hooks/useBudget';
-import { useMLInsights } from '../hooks/useMLInsights';
+import { 
+  useMLInsights,
+  useHealthScore,
+  useAdvancedExpenseForecast,
+  useBudgetRecommendations,
+  useSpendingHabits,
+  useBenchmark,
+  useBehaviorNudges,
+} from '../hooks/useMLInsights';
 
 // Utils
 import accountService from '../services/accountService';
 import categoryService from '../services/categoryService';
 import { useQuery } from '@tanstack/react-query';
-import { QUERY_KEYS } from '../utils/constants';
+import { QUERY_KEYS, ROUTES } from '../utils/constants';
 import { TransactionType } from '../types';
 
 const Dashboard: React.FC = () => {
@@ -27,6 +43,17 @@ const Dashboard: React.FC = () => {
   const { data: transactions = [], isLoading: txnLoading } = useTransactions();
   const { data: budgets = [], isLoading: budgetsLoading } = useBudgets();
   const { data: mlInsightsData, isLoading: mlLoading } = useMLInsights();
+  
+  // NEW: Advanced ML hooks
+  const { data: healthScore, isLoading: healthScoreLoading } = useHealthScore();
+  const { data: expenseForecast, isLoading: forecastLoading } = useAdvancedExpenseForecast(12);
+  const { data: spendingHabits, isLoading: habitsLoading } = useSpendingHabits();
+  const { data: benchmark, isLoading: benchmarkLoading } = useBenchmark();
+  const { data: behaviorNudges, isLoading: nudgesLoading } = useBehaviorNudges();
+  
+  // Calculate total budget for recommendations
+  const totalBudget = budgets.reduce((sum, budget) => sum + Number(budget.limit), 0);
+  const { data: budgetRecommendations, isLoading: recommendationsLoading } = useBudgetRecommendations(totalBudget);
   
   // Fetch categories for chart data mapping
   const { data: categories = [], isLoading: categoriesLoading } = useQuery({
@@ -263,6 +290,33 @@ const Dashboard: React.FC = () => {
         />
       )}
 
+      {/* NEW: Financial Health Score - Prominent placement */}
+      <HealthScoreCard score={healthScore} isLoading={healthScoreLoading} />
+
+      {/* NEW: Advanced ML Features Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Expense Forecast */}
+        <ExpenseForecastChart forecast={expenseForecast} isLoading={forecastLoading} />
+        
+        {/* Budget Recommendations */}
+        <BudgetRecommendations 
+          recommendations={budgetRecommendations} 
+          isLoading={recommendationsLoading}
+        />
+      </div>
+
+      {/* NEW: Spending Insights Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Spending Habits */}
+        <SpendingHabits habits={spendingHabits} isLoading={habitsLoading} />
+        
+        {/* Peer Benchmark */}
+        <BenchmarkCard benchmark={benchmark} isLoading={benchmarkLoading} />
+      </div>
+
+      {/* NEW: Behavior Nudges */}
+      <BehaviorNudges nudges={behaviorNudges} isLoading={nudgesLoading} />
+
       {/* Quick Actions */}
       <div className="bg-gradient-to-br from-purple-500 to-blue-500 rounded-2xl p-6 text-white">
         <div className="flex items-center justify-between">
@@ -276,11 +330,11 @@ const Dashboard: React.FC = () => {
             </p>
           </div>
           <Link
-            to="/goals"
+            to={ROUTES.ML_INSIGHTS}
             className="bg-white text-purple-600 hover:bg-blue-50 px-6 py-3 rounded-lg font-semibold transition-colors flex items-center gap-2"
           >
             <TrendingUp size={18} />
-            View Predictions
+            View All AI Insights
           </Link>
         </div>
       </div>

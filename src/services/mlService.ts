@@ -1,4 +1,5 @@
 import apiClient from '../api/client';
+import { getUserId } from '../utils/auth';
 import {
   MLHealthResponse,
   MLTrainResponse,
@@ -9,6 +10,18 @@ import {
   MLGoalTimelineResponse,
   MLReversePlanRequest,
   MLReversePlanResponse,
+  // New types
+  FinancialHealthScore,
+  AdvancedExpenseForecast,
+  BudgetRecommendationsResponse,
+  BudgetAlertsResponse,
+  BudgetOptimizationResponse,
+  SpendingHabitsResponse,
+  SavingsOpportunitiesResponse,
+  BehaviorNudgesResponse,
+  BenchmarkData,
+  ModelPerformanceResponse,
+  HealthTrendsResponse,
 } from '../types';
 
 const mlService = {
@@ -65,6 +78,86 @@ const mlService = {
   // Get anomalies
   getAnomalies: async (): Promise<any> => {
     const response = await apiClient.get('/ml/anomalies');
+    return response.data;
+  },
+
+  // NEW ADVANCED ML ENDPOINTS
+
+  // Get advanced expense forecast (6-24 months)
+  getAdvancedExpenseForecast: async (months: number = 12): Promise<AdvancedExpenseForecast> => {
+    const response = await apiClient.post<AdvancedExpenseForecast>(
+      '/ml/predictions/expense/advanced',
+      { months }
+    );
+    return response.data;
+  },
+
+  // Get financial health score (0-100 with grade A-F)
+  getHealthScore: async (): Promise<FinancialHealthScore> => {
+    const response = await apiClient.get<FinancialHealthScore>('/ml/insights/health-score');
+    return response.data;
+  },
+
+  // Get health score trends over time
+  getHealthTrends: async (): Promise<HealthTrendsResponse> => {
+    const userId = getUserId();
+    const response = await apiClient.get<HealthTrendsResponse>(`/ml/insights/trends/${userId}`);
+    return response.data;
+  },
+
+  // Compare with peer benchmarks
+  getBenchmark: async (): Promise<BenchmarkData> => {
+    const userId = getUserId();
+    const response = await apiClient.get<BenchmarkData>(`/ml/insights/benchmark/${userId}`);
+    return response.data;
+  },
+
+  // Get AI budget recommendations (50/30/20 rule)
+  getBudgetRecommendations: async (totalBudget: number): Promise<BudgetRecommendationsResponse> => {
+    const response = await apiClient.post<BudgetRecommendationsResponse>(
+      '/ml/budget/recommend',
+      { total_budget: totalBudget }
+    );
+    return response.data;
+  },
+
+  // Get real-time budget overspending alerts
+  getBudgetAlerts: async (): Promise<BudgetAlertsResponse> => {
+    const response = await apiClient.post<BudgetAlertsResponse>('/ml/budget/alerts', {});
+    return response.data;
+  },
+
+  // Get budget optimization suggestions
+  optimizeBudget: async (): Promise<BudgetOptimizationResponse> => {
+    const response = await apiClient.post<BudgetOptimizationResponse>('/ml/budget/optimize', {});
+    return response.data;
+  },
+
+  // Get spending habit analysis
+  getSpendingHabits: async (): Promise<SpendingHabitsResponse> => {
+    const userId = getUserId();
+    const response = await apiClient.get<SpendingHabitsResponse>(`/ml/recommendations/habits/${userId}`);
+    return response.data;
+  },
+
+  // Get savings opportunities
+  getSavingsOpportunities: async (): Promise<SavingsOpportunitiesResponse> => {
+    const userId = getUserId();
+    const response = await apiClient.get<SavingsOpportunitiesResponse>(`/ml/recommendations/opportunities/${userId}`);
+    return response.data;
+  },
+
+  // Get behavior nudges
+  getBehaviorNudges: async (): Promise<BehaviorNudgesResponse> => {
+    const userId = getUserId();
+    const response = await apiClient.get<BehaviorNudgesResponse>(`/ml/recommendations/nudges/${userId}`);
+    return response.data;
+  },
+
+  // Get model performance metrics
+  getModelPerformance: async (): Promise<ModelPerformanceResponse> => {
+    const userId = getUserId();
+    const response = await apiClient.get<ModelPerformanceResponse>(`/ml/models/performance/${userId}`);
     return response.data;
   },
 };
