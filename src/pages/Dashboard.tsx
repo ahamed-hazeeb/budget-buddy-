@@ -35,7 +35,7 @@ import {
 import accountService from '../services/accountService';
 import categoryService from '../services/categoryService';
 import { useQuery } from '@tanstack/react-query';
-import { QUERY_KEYS } from '../utils/constants';
+import { QUERY_KEYS, ROUTES } from '../utils/constants';
 import { TransactionType } from '../types';
 
 const Dashboard: React.FC = () => {
@@ -330,7 +330,7 @@ const Dashboard: React.FC = () => {
             </p>
           </div>
           <Link
-            to="/ml-insights"
+            to={ROUTES.ML_INSIGHTS}
             className="bg-white text-purple-600 hover:bg-blue-50 px-6 py-3 rounded-lg font-semibold transition-colors flex items-center gap-2"
           >
             <TrendingUp size={18} />

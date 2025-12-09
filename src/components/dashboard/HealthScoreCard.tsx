@@ -75,9 +75,9 @@ const HealthScoreCard: React.FC<HealthScoreCardProps> = ({ score, isLoading }) =
     { label: 'Savings Rate', value: score.savings_rate_score, icon: DollarSign },
     { label: 'Expense Consistency', value: score.expense_consistency_score, icon: TrendingUp },
     { label: 'Emergency Fund', value: score.emergency_fund_score, icon: Shield },
-    { label: 'Debt Ratio', value: score.debt_ratio_score || 0, icon: Shield },
-    { label: 'Goal Progress', value: score.goal_progress_score || 0, icon: Target },
-  ].filter(c => c.value !== undefined);
+    ...(score.debt_ratio_score !== undefined ? [{ label: 'Debt Ratio', value: score.debt_ratio_score, icon: Shield }] : []),
+    ...(score.goal_progress_score !== undefined ? [{ label: 'Goal Progress', value: score.goal_progress_score, icon: Target }] : []),
+  ];
 
   return (
     <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-2xl shadow-sm border border-purple-100 overflow-hidden">

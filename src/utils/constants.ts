@@ -122,3 +122,16 @@ export const AUTH_MESSAGES = {
 
 // Percentage Constants
 export const MAX_PERCENTAGE = 100;
+
+// Routes
+export const ROUTES = {
+  HOME: '/',
+  LOGIN: '/login',
+  SIGNUP: '/signup',
+  TRANSACTIONS: '/transactions',
+  BUDGET: '/budget',
+  GOALS: '/goals',
+  REMINDERS: '/reminders',
+  ACCOUNTS: '/accounts',
+  ML_INSIGHTS: '/ml-insights',
+} as const;

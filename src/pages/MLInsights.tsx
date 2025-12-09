@@ -49,7 +49,8 @@ const MLInsights: React.FC = () => {
   };
 
   const isAnyLoading = healthScoreLoading || forecastLoading || habitsLoading || 
-                       benchmarkLoading || nudgesLoading || recommendationsLoading;
+                       benchmarkLoading || nudgesLoading || recommendationsLoading ||
+                       trendsLoading || opportunitiesLoading || alertsLoading || performanceLoading;
 
   return (
     <div className="space-y-8">
